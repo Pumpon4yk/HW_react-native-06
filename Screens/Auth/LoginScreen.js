@@ -11,10 +11,13 @@ import {
   Dimensions,
   ImageBackground,
 } from "react-native";
+import { useDispatch } from "react-redux";
+
 import useKeyboardStatus from "../../hooks/keyboardStatus";
+import {authSignIn} from "../../redux/auth/authOperations";
 
 export default function LoginScreen({ navigation }) {
-  const [name, setName] = useState("");
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
@@ -24,20 +27,18 @@ export default function LoginScreen({ navigation }) {
   const [keyboardStatus] = useKeyboardStatus(Keyboard);
 
   const fokusToggle = (type) => {
-    if (type === "name") return setFocusName(!focusName);
     if (type === "email") return setFocusEmail(!focusEmail);
     if (type === "password") return setFocusPassword(!focusPassword);
   };
 
-  const handalSubmit = () => {
+  const handleSubmit = () => {
     const data = {
-      name,
       email,
       password,
     };
-    console.log(data);
 
-    setName("");
+    dispatch(authSignIn(data));
+
     setEmail("");
     setPassword("");
     Keyboard.dismiss();
@@ -94,7 +95,7 @@ export default function LoginScreen({ navigation }) {
                 <Text style={styles.textBtn}>show</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.submitBtn} onPress={handalSubmit}>
+            <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
               <Text style={{ ...styles.textBtn, color: "#fff" }}>Sing In</Text>
             </TouchableOpacity>
 

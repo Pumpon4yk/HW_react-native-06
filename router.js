@@ -11,24 +11,24 @@ const Main = createStackNavigator();
 export default function renderScreen(params) {
   if (params) {
     return (
-      <Auth.Navigator>
-        <Auth.Screen
-          options={{ headerShown: false }}
-          name="Login"
-          component={LoginScreen}
-        />
-        <Auth.Screen
-          options={{ headerShown: false }}
-          name="Registration"
-          component={RegistrationScreen}
-        />
-      </Auth.Navigator>
+      <Main.Navigator>
+        <Main.Screen options={{ headerShown: false }} name="Home" component={Home} />
+      </Main.Navigator>
     );
   }
-  return (
-    <Main.Navigator>
-      <Main.Screen options={{ headerShown: false }} name="Home" component={Home} />
-    </Main.Navigator>
+  return(
+    <Auth.Navigator>
+      <Auth.Screen
+        options={{ headerShown: false }}
+        name="Login"
+        component={LoginScreen}
+      />
+      <Auth.Screen
+        options={{ headerShown: false }}
+        name="Registration"
+        component={RegistrationScreen}
+      />
+    </Auth.Navigator>
   );
 }
 
