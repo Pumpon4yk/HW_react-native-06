@@ -35,7 +35,6 @@ export default function Home({ navigation }) {
             : { display: "none" },
         })}
         name={"PostsScreenNavi"}
-        // component={PostsScreenNavi}
       >
         {(props) => <PostsScreenNavi {...props} bar={setBar} />}
       </Tabs.Screen>
@@ -74,10 +73,12 @@ export default function Home({ navigation }) {
               </View>
             );
           },
+          headerShown: false,
         })}
         name={"Profile"}
-        component={ProfileScreen}
-      />
+      >
+        {(props) => <ProfileScreen {...props} bar={setBar} />}
+      </Tabs.Screen>
     </Tabs.Navigator>
   );
 }

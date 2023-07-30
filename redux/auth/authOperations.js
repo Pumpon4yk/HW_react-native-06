@@ -1,4 +1,4 @@
-import { auth, db, storage} from "../../firebase/config"
+import { auth } from "../../firebase/config"
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -8,25 +8,30 @@ import {
 } from "firebase/auth";
 import {updateUser,  authCurrentUser, authSingOut} from "./authSlice"
 
-const createUserObject = user => ({
-  userId: user.uid,
-  nickname: user.displayName,
-  userEmail: user.email,
-  userAvatar: user.photoURL,
-})
+const setUserStorage = (user, dispatch) => {
+  const newObjUser = {
+    userId: user.uid,
+    nickname: user.displayName,
+    userEmail: user.email,
+    userAvatar: user.photoURL,
+  }
 
-export const authSignUp = ({photoURL = "", nickname, email, password}) => async (dispatch) => {
+  dispatch(updateUser(newObjUser))
+  dispatch(authCurrentUser(true))
+}
+
+export const authSignUp = ({photoURL, nickname, email, password}) => async (dispatch) => {
   try {
-      await createUserWithEmailAndPassword(auth, email, password)
-      await updateProfile(auth.currentUser, {
+    await createUserWithEmailAndPassword(auth, email, password)
+    
+    await updateProfile(auth.currentUser, {
       displayName: nickname,
       photoURL,
     });
+    
     const userSuccess = auth.currentUser;
 
-    dispatch(updateUser(createUserObject(userSuccess)))
-    dispatch(authCurrentUser(true))
-
+    setUserStorage(userSuccess, dispatch)
   } catch (error) {
   console.log("🚀 ~ authSignUp ~ error.message:", error.message)
   }
@@ -34,11 +39,11 @@ export const authSignUp = ({photoURL = "", nickname, email, password}) => async 
 
 export const authSignIn = ({email, password}) => async (dispatch) => {
   try {
-    const user = await signInWithEmailAndPassword(auth, email, password)
+    await signInWithEmailAndPassword(auth, email, password)
+    
+    const user = auth.currentUser;
 
-    dispatch(updateUser(createUserObject(user)))
-    dispatch(authCurrentUser(true))
-
+    setUserStorage(user, dispatch)
   } catch (error) {
   console.log("🚀 ~ authSignIn ~ error.message:", error.message)
   }
@@ -57,8 +62,7 @@ export const authCurrent = () => async (dispatch) => {
   try {
     onAuthStateChanged(auth, user => {
       if (user) {
-        dispatch(authCurrentUser(createUserObject(user)))
-        dispatch(authCurrentUser(true))
+    setUserStorage(user, dispatch)
       }
     })
 

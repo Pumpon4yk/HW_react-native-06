@@ -3,9 +3,7 @@ import MapView, { Marker} from 'react-native-maps';
 
 
 export default function MapScreen({route}) {
-const {locationPostCoord: {latitude, longitude}} = route.params[0]
-
-
+const {locationPostCoord: {latitude, longitude}} = route.params[0].post
 
   return(
     <View style={styles.container}>

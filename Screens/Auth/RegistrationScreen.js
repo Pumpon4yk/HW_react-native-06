@@ -9,12 +9,11 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
-  Dimensions,
-  ImageBackground,
 } from "react-native";
 
 import { useDispatch } from "react-redux";
-
+import UserAvatar from "../../Components/UserAvatar"
+import BgImage from "../../Components/BgImage";
 import useKeyboardStatus from "../../hooks/keyboardStatus";
 import {authSignUp} from "../../redux/auth/authOperations";
 
@@ -29,7 +28,7 @@ export default function RegistrationScreen({ navigation }) {
   const [focusEmail, setFocusEmail] = useState(false);
   const [focusPassword, setFocusPassword] = useState(false);
   const [keyboardStatus] = useKeyboardStatus(Keyboard);
-  const [avatar, setAvatar] = useState(true);
+  const [avatar, setAvatar] = useState(null);
 
   const fokusToggle = (type) => {
     if (type === "nickname") return setFocusName(!focusName);
@@ -42,6 +41,7 @@ export default function RegistrationScreen({ navigation }) {
       nickname,
       email,
       password,
+      photoURL: avatar,
     };
     dispatch(authSignUp(data));
 
@@ -59,28 +59,11 @@ export default function RegistrationScreen({ navigation }) {
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.container}>
-          <ImageBackground
-            source={require("../../assets/img/BG.jpg")}
-            style={styles.image}
-          ></ImageBackground>
+          <BgImage/>
           <View
             style={{ ...styles.form, marginBottom: keyboardStatus ? -175 : 0 }}
           >
-            <View style={styles.avatar}>
-              <TouchableOpacity style={{ width: 25 }}>
-                {avatar ? (
-                  <Image
-                    style={styles.icon}
-                    source={require("../../assets/img/add.png")}
-                  />
-                ) : (
-                  <Image
-                    style={styles.icon}
-                    source={require("../../assets/img/delete.png")}
-                  />
-                )}
-              </TouchableOpacity>
-            </View>
+            <UserAvatar avatar={avatar} setAvatar={setAvatar}/>
             <Text style={styles.title}>Sing Up</Text>
             <TextInput
               inputmode="text"
@@ -153,16 +136,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  image: {
-    flex: 1,
-    resizeMode: "cover",
-    position: "absolute",
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
-  },
   form: {
     position: "relative",
     paddingLeft: 16,
@@ -175,20 +148,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     marginTop: "auto",
-  },
-  avatar: {
-    backgroundColor: "#F6F6F6",
-    width: 120,
-    height: 120,
-    borderRadius: 16,
-    position: "absolute",
-    top: -60,
-  },
-  icon: {
-    position: "absolute",
-    width: 25,
-    left: 107,
-    top: 81,
   },
   title: {
     color: "#212121",

@@ -12,6 +12,7 @@ import {
   ImageBackground,
 } from "react-native";
 import { useDispatch } from "react-redux";
+import BgImage from "../../Components/BgImage";
 
 import useKeyboardStatus from "../../hooks/keyboardStatus";
 import {authSignIn} from "../../redux/auth/authOperations";
@@ -21,7 +22,6 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
-  const [focusName, setFocusName] = useState(false);
   const [focusEmail, setFocusEmail] = useState(false);
   const [focusPassword, setFocusPassword] = useState(false);
   const [keyboardStatus] = useKeyboardStatus(Keyboard);
@@ -51,10 +51,7 @@ export default function LoginScreen({ navigation }) {
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.container}>
-          <ImageBackground
-            source={require("../../assets/img/BG.jpg")}
-            style={styles.image}
-          ></ImageBackground>
+        <BgImage/>
           <View
             style={{ ...styles.form, marginBottom: keyboardStatus ? -241 : 0 }}
           >

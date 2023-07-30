@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   TouchableOpacity,
   Text,
@@ -10,10 +11,14 @@ import {
   Keyboard,
   StyleSheet,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { useState } from "react";
+import { Feather } from '@expo/vector-icons';
+import { getComments, getPost } from "../../../redux/post/selectors";
+import { useDispatch, useSelector } from "react-redux";
+import { addCommentToPost } from "../../../redux/post/postOperations";
+import { setComments } from "../../../redux/post/postSlice";
 
-function getCurrentDateTime() {
+
+function getCurrentDateTime(d) {
   const months = [
     'January',
     'February',
@@ -29,7 +34,7 @@ function getCurrentDateTime() {
     'December',
   ];
 
-  const date = new Date();
+  const date = new Date(d);
   const day = date.getDate().toString().padStart(2, "0");
   const month = months[date.getMonth()];
   const year = date.getFullYear();
@@ -38,27 +43,46 @@ function getCurrentDateTime() {
 
   return `${day} ${month}, ${year} | ${hours}:${minutes}`;
 }
+const equ = (val1, val2) => val1 === val2;
+const borderRadiusTop = (params) => params ? {borderTopRightRadius: 0} : {borderTopLeftRadius: 0}
 
 export default function CommentsScreen({ route }) {
-  const { photo } = route.params[0];
-
-  const [coments, setComents] = useState([]);
+  const dispatch = useDispatch()
+  const {id, userId} = route.params[0]
+  const post = getPost(id)
+  const comments = useSelector(getComments)
   const [inputValue, setInputValue] = useState("");
+
+  
+  const handleSubmit = async () => {
+    if (inputValue === "") return;
+     dispatch(addCommentToPost(id, inputValue))
+  
+     Keyboard.dismiss()
+     setInputValue("");
+  }
+
+  useEffect(() =>{
+    dispatch(setComments(post.post.comments))
+  },[dispatch])
+
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
     <View style={styles.container}>
-      <Image style={styles.img} source={{ uri: photo }} />
+      <Image style={styles.img} source={{ uri: post.post.photo }} />
       <FlatList
-        data={coments}
+        data={comments}
         keyExtractor={(item, indx) => indx.toString()}
         renderItem={({ item }) => {
+          if (!item) return;
           return (
-             <View style={{width:Dimensions.get("window").width - 32,flexDirection: "row", marginBottom: 24 }}>
-              <Image style={styles.iconUser} />
-              <View style={styles.containerComment}>
-                <Text style={styles.Comnent}>{item}</Text>
-                <Text style={styles.date}>{getCurrentDateTime()}</Text>
+              <View style={{width:Dimensions.get("window").width - 32, flexDirection: `${equ(userId, item.authorId) ? "row-reverse" : "row"}`,gap: 16, marginBottom: 24 }}>
+              <Image style={styles.iconUser} source={{ uri: item.authorAvatar }} />
+              <View style={{...styles.containerComment, ...borderRadiusTop(equ(userId, item.authorId))
+              }}>
+                <Text style={styles.Comnent}>{item.comment}</Text>
+                <Text style={{...styles.date, textAlign: `${equ(userId, item.authorId) ? "left" : 'right'}`}}>{getCurrentDateTime(item.createdAt)}</Text>
               </View>
             </View>
           );
@@ -75,12 +99,7 @@ export default function CommentsScreen({ route }) {
         />
         <TouchableOpacity
           style={styles.sendIcon}
-          onPress={() => {
-            if (inputValue === "") return alert("write comment");
-            setComents((prev) => [inputValue, ...prev]);
-            setInputValue("");
-            Keyboard.dismiss()
-          }}
+          onPress={handleSubmit}
         >
           <Feather name="arrow-up" size={24} color="white" />
         </TouchableOpacity>
@@ -93,8 +112,6 @@ export default function CommentsScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: "center",
-    // alignItems: 'center',
     backgroundColor: "#fff",
     paddingHorizontal: 16,
     paddingRight: 16,
@@ -111,14 +128,13 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: 50,
     backgroundColor: 'grey',
-    marginRight: 16,
   },
   containerComment:{
     width: Dimensions.get("window").width - 76,
 backgroundColor: '#00000008',
 padding: 16,
 borderRadius: 6,
-borderTopLeftRadius: 0,
+// borderTopLeftRadius: 0,
 
   },
   Comnent:{
@@ -126,6 +142,7 @@ fontFamily: "Roboto-Medium",
 color: '#212121',
 fontSize: 13,
 lineHeight: 18,
+marginBottom: 8
 
   },
   
@@ -134,7 +151,6 @@ lineHeight: 18,
     fontFamily: "Roboto-Medium",
 fontSize: 10,
 lineHeight: 12,
-textAlign: 'right'
   },
   input: {
     width: "100%",

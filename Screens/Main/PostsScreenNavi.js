@@ -1,21 +1,15 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { useDispatch } from "react-redux";
 
+import BtnLogOut from "../../Components/BtnLogOut";
 import PostsScreen from "./PostsScreeans/PostsScreen";
 import CommentsScreen from "./PostsScreeans/CommentsScreen";
 import MapScreen from "./PostsScreeans/MapScreen";
-import { Feather } from "@expo/vector-icons";
-import { authSignOut } from "../../redux/auth/authOperations";
+import { Feather } from '@expo/vector-icons';
 
 const PostStack = createStackNavigator();
 
 export default function PostsScreenNavi({ navigation, bar}) {
-  const dispatch = useDispatch()
-
-const logOut = () => {
-  dispatch(authSignOut())
-}
 
   return (
     <PostStack.Navigator
@@ -38,12 +32,7 @@ const logOut = () => {
         name="Posts"
         options={{
           headerRight: () => (
-            <TouchableOpacity
-              onPress={logOut}
-              style={{ ...styles.btnLogOut, marginRight: 16 }}
-            >
-              <Feather name="log-out" size={24} color="#BDBDBD" />
-            </TouchableOpacity>
+            <BtnLogOut/>
           ),
           headerLeft: () => null,
         }}

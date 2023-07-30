@@ -1,4 +1,5 @@
 // import React from 'react';
+import { useDispatch } from "react-redux";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
@@ -19,6 +20,9 @@ import { FontAwesome } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 
+import { createPost} from "../../redux/post/postOperations"
+import { uploadImage } from "../../api/uploadImage";
+
 // const getAddres = async(lat, lon) =>{
 //   fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`)
 // .then(response => response.json())
@@ -31,6 +35,7 @@ import { Feather } from "@expo/vector-icons";
 // }
 
 export default function CreatePostsScreen({ navigation }) {
+  const dispatch = useDispatch()
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [cameraRef, setCameraRef] = useState(null);
@@ -64,15 +69,6 @@ export default function CreatePostsScreen({ navigation }) {
     setLocationPost("");
   };
 
-  const sendNavi = () => {
-    navigation.navigate("Posts", {
-      photo,
-      namePost,
-      locationPost,
-      locationPostCoord,
-    });
-  };
-
   const onSubmit = async () => {
     if (true) {
       const location = await Location.getCurrentPositionAsync();
@@ -82,8 +78,21 @@ export default function CreatePostsScreen({ navigation }) {
       };
       setLocationPostCoord(coords);
     }
+    
+    const imgUri = await uploadImage(photo, "post")
 
-    sendNavi();
+    const post = {
+      photo: imgUri,
+      namePost,
+      locationPost,
+      locationPostCoord,
+      likes: [],
+      comments:[]
+    }
+
+    dispatch(createPost(post))
+
+    navigation.navigate("Posts")
     clearData();
   };
 
