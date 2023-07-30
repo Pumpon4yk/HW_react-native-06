@@ -65,7 +65,6 @@ right: 0,
   fontFamily: "Roboto-Medium",
   fontSize: 30,
   letterSpacing: 0.3,
-  marginBottom: 33,
   }
 
 })
